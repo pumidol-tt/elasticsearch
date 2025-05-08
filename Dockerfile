@@ -19,7 +19,13 @@ USER 0
 # Install sudo and allow the elasticsearch user to run chown as root
 RUN apt-get update && apt-get install -y sudo && \
     echo "elasticsearch ALL=(root) NOPASSWD: /bin/chown" > /etc/sudoers.d/elasticsearch
-
+# Install required Elasticsearch plugins
+RUN if [ ! -d /usr/share/elasticsearch/plugins/analysis-icu ]; then \
+        elasticsearch-plugin install --batch analysis-icu; \
+    fi && \
+    if [ ! -d /usr/share/elasticsearch/plugins/analysis-kuromoji ]; then \
+        elasticsearch-plugin install --batch analysis-kuromoji; \
+    fi
 # Switch back to the elasticsearch user as elasticsearch can only run as non-root
 USER 1000:0
 
